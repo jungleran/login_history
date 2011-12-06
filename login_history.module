@@ -1,0 +1,61 @@
+<?php
+
+/**
+ * Implements hook_user_login().
+ * The user just logged in.
+ *
+ * @param $edit
+ *   The array of form values submitted by the user.
+ * @param $account
+ *   The user object on which the operation was just performed.
+ */
+function login_history_user_login(&$edit, $account) {
+  // Grab the last entry made in login_acces for this user
+  // (which is going to be their previous login timestamp)
+  $last_login = db_query("SELECT login
+                     FROM {login_history}
+                     WHERE uid = :uid
+                     ORDER BY login DESC
+                     LIMIT 1", array(':uid' => $account->uid))->fetchField();
+  
+  // We only want to add to the user database if there is something to add
+  // (i.e. this is not the user's fist-time logging in)
+  if (!empty($last_login)) {
+    // Update the users table with the correct information so that we can
+    // grab last_login from the $user object and/or user_load().
+    // Why doesn't user_save() work here??
+    db_update('users')
+      ->fields(array(
+        'last_login' => $last_login,
+      ))
+      ->condition('uid', $account->uid)
+      ->execute();
+  }
+  
+  // Now save the user's current login timestamp to login_history
+  db_insert('login_history')
+    ->fields(array(
+      'uid' => $account->uid,
+      'login' => $account->login,
+    ))
+    ->execute();
+}
+
+/**
+ * Implements hook_menu().
+ * Define menu items and page callbacks.
+ * 
+ * @return
+ *   An array of menu items.
+ */
+function login_history_menu() {
+  $items = array();
+  $items['admin/reports/login-history'] = array(
+    'title' => 'Login history',
+    'description' => '',
+    'page callback' => 'login_history_report_callback',
+    'access arguments' => array('access_arguments'),
+    'file' => 'includes/login_history.admin.inc',
+  );
+  return $items;
+}

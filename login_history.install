@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function login_history_install() {
+  // We are going to add a last_login field to the users table so that we can get the
+  // value from the $user object and from user_load().
+  db_add_field(
+    'users',
+    'last_login',
+    array(
+      'type' => 'int',
+      'length' => 11,
+      'not null' => TRUE,
+      'description' => "Timestamp for user's previous login.",
+      'default' => 0,
+    )
+  );
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function login_history_uninstall() {
+  db_drop_field('users', 'last_login');
+}
+
+/**
+ * Implements hook_schema().
+ */
+function login_history_schema() {
+  $schema['login_history'] = array(
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'uid of user.',
+      ),
+      'login' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for user's login.",
+      ),
+    ),
+    'primary key' => array('uid', 'login'),
+  );
+  return $schema;
+}
