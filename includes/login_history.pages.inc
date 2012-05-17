@@ -50,7 +50,7 @@ function login_history_output(array $history, $format = 'table', array $header =
         $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $row = array(
           format_date($entry->login, 'small'),
-          format_username($entry->uid),
+          check_plain(format_username($entry->uid)),
           check_plain($entry->hostname),
           empty($entry->one_time) ? t('Regular login') : t('One-time login'),
           check_plain($entry->user_agent),
@@ -64,7 +64,7 @@ function login_history_output(array $history, $format = 'table', array $header =
       foreach ($history as $entry) {
         $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $output .= '<li>';
-        $output .= '<span class="login-history-info">' . format_username($entry) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
+        $output .= '<span class="login-history-info">' . check_plain(format_username($entry)) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
         $output .= '</li>';
       }
       if ($output) {
@@ -78,7 +78,7 @@ function login_history_output(array $history, $format = 'table', array $header =
       foreach ($history as $entry) {
         $rows[] = array(
           format_date($entry->login, 'small'),
-          format_username($entry),
+          check_plain(format_username($entry)),
           check_plain($entry->hostname),
           empty($entry->one_time) ? t('Regular login') : t('One-time login'),
           check_plain($entry->user_agent),
