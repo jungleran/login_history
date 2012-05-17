@@ -1,4 +1,4 @@
 name = Login History
 description = A history of the site's user logins.
 core = 7.x
-version = 7.x-1.0
+configure = admin/reports/login-history

@@ -1,9 +1,17 @@
 <?php
 
 function login_history_report_callback() {
+  if (empty($account->uid) && !user_access('view all login histories')) {
+    // This should never happen, but be cautious in case calling code is weak.
+    global $user;
+    $account = $user;
+  }
   $header = array(
     array('data' => t('Date'), 'field' => 'lh.login', 'sort' => 'desc'),
     array('data' => t('Username'), 'field' => 'u.name'),
+    array('data' => t('IP Address'), 'field' => 'lh.hostname'),
+    array('data' => t('One-time login?'), 'field' => 'lh.one_time'),
+    array('data' => t('User Agent'), 'field' => 'lh.user_agent'),
   );
 
   $query = db_select('login_history', 'lh')->extend('TableSort')->extend('PagerDefault');
@@ -21,7 +29,7 @@ function login_history_report_callback() {
 
 /**
  * Render login histories.
- * 
+ *
  * @param $history
  *   A list of login history objects to output.
  * @param $format
@@ -37,28 +45,33 @@ function login_history_output(array $history, $format = 'table', array $header =
     case 'text':
       // Output delimiter in first line, since this may change.
       $output = '\t' . "\n";
-      
+
       foreach ($history as $entry) {
+        $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $row = array(
           format_date($entry->login, 'small'),
           format_username($entry->uid),
+          check_plain($entry->hostname),
+          empty($entry->one_time) ? t('Regular login') : t('One-time login'),
+          check_plain($entry->user_agent),
         );
         $output .= implode("\t", $row) . "\n";
       }
       break;
-      
+
     case 'list':
       $output = '';
       foreach ($history as $entry) {
+        $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $output .= '<li>';
-        $output .= '<span class="login-history-info">' . format_username($entry) . ' ' . format_date($entry->login, 'small') . ':</span>';
+        $output .= '<span class="login-history-info">' . format_username($entry) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
         $output .= '</li>';
       }
       if ($output) {
         $output = '<ul id="login-history-backlog">' . $output . '</ul>';
       }
       break;
-    
+
     case 'table':
     default:
       $rows = array();
@@ -66,6 +79,9 @@ function login_history_output(array $history, $format = 'table', array $header =
         $rows[] = array(
           format_date($entry->login, 'small'),
           format_username($entry),
+          check_plain($entry->hostname),
+          empty($entry->one_time) ? t('Regular login') : t('One-time login'),
+          check_plain($entry->user_agent),
         );
       }
       $output['history'] = array(
