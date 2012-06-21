@@ -26,7 +26,7 @@ function login_history_user_login(&$edit, $account) {
       'login' => $account->login,
       'hostname' => ip_address(),
       'one_time' => $one_time,
-      'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+      'user_agent' => empty($_SERVER['HTTP_USER_AGENT']) ? '' : $_SERVER['HTTP_USER_AGENT'],
     ))
     ->execute();
 }
