@@ -14,15 +14,12 @@ function login_history_report_callback() {
     array('data' => t('User Agent'), 'field' => 'lh.user_agent'),
   );
 
-  $query = db_select('login_history', 'lh')->extend('TableSort')->extend('PagerDefault');
-  $query->join('users', 'u', 'lh.uid = u.uid');
-  $result = $query
-    ->fields('lh')
-    ->fields('u', array('name'))
-    ->orderByHeader($header)
-    ->limit(50)
-    ->execute()
-    ->fetchAll();
+  $query = pager_query("SELECT lh.login, u.name, lh.hostname, lh.one_time, lh.user_agent FROM {login_history} lh INNER JOIN {users} u ON lh.uid = u.uid " . tablesort_sql($header), 50);
+
+  $result = array();
+  while ($row = db_fetch_object($query)) {
+    $result[] = $row;
+  }
 
   return login_history_output($result, 'table', $header);
 }
@@ -50,7 +47,7 @@ function login_history_output(array $history, $format = 'table', array $header =
         $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $row = array(
           format_date($entry->login, 'small'),
-          check_plain(format_username($entry->uid)),
+          check_plain($entry->name),
           check_plain($entry->hostname),
           empty($entry->one_time) ? t('Regular login') : t('One-time login'),
           check_plain($entry->user_agent),
@@ -64,7 +61,7 @@ function login_history_output(array $history, $format = 'table', array $header =
       foreach ($history as $entry) {
         $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $output .= '<li>';
-        $output .= '<span class="login-history-info">' . check_plain(format_username($entry)) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
+        $output .= '<span class="login-history-info">' . check_plain($entry->name) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
         $output .= '</li>';
       }
       if ($output) {
@@ -78,21 +75,19 @@ function login_history_output(array $history, $format = 'table', array $header =
       foreach ($history as $entry) {
         $rows[] = array(
           format_date($entry->login, 'small'),
-          check_plain(format_username($entry)),
+          check_plain($entry->name),
           check_plain($entry->hostname),
           empty($entry->one_time) ? t('Regular login') : t('One-time login'),
           check_plain($entry->user_agent),
         );
       }
-      $output['history'] = array(
-        '#theme' => 'table',
-        '#header' => $header,
-        '#rows' => $rows,
-        '#empty' => t('No login history available.'),
-      );
-      $output['pager'] = array(
-        '#theme' => 'pager',
-      );
+      if (!empty($rows)) {
+        $output = theme('table', $header, $rows);
+        $output .= theme('pager');
+      }
+      else {
+        $output = t('No login history available.');
+      }
       break;
   }
 

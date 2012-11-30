@@ -1,46 +1,6 @@
 <?php
 
 /**
- * Add some more data to the login_history table to provide for more features.
- */
-function login_history_update_1() {
-  db_add_field('login_history', 'hostname', array(
-    'type' => 'varchar',
-    'length' => 128,
-    'not null' => TRUE,
-    'default' => '',
-    'description' => "The user's host name.",
-  ));
-  db_add_field('login_history', 'one_time', array(
-    'type' => 'int',
-    'unsigned' => TRUE,
-    'not null' => TRUE,
-    'default' => 0,
-    'size' => 'tiny',
-    'description' => 'Indicates whether the login was from a one-time login link (e.g. password reset).',
-  ));
-  db_add_field('login_history', 'user_agent', array(
-    'type' => 'varchar',
-    'length' => 256,
-    'not null' => TRUE,
-    'default' => '',
-    'description' => 'User agent (i.e. browser) of the device used during the login.',
-  ));
-  db_add_index('login_history', 'login_history_uid', array('uid'));
-  db_add_index('login_history', 'login_history_onetime', array('one_time'));
-  db_add_index('login_history', 'login_history_uid_host_ua', array('uid', 'hostname', 'user_agent'));
-}
-
-/**
- * Remove this field.
- */
-function login_history_update_2() {
-  db_drop_field('users', 'last_login');
-}
-
-
-
-/**
  * Implements hook_schema().
  */
 function login_history_schema() {
@@ -86,4 +46,20 @@ function login_history_schema() {
     ),
   );
   return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function login_history_install() {
+  // Create tables.
+  drupal_install_schema('login_history');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function login_history_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('login_history');
 }
