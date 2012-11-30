@@ -1,6 +1,6 @@
 <?php
 
-function login_history_report_callback() {
+function login_history_report_callback($account = NULL) {
   if (empty($account->uid) && !user_access('view all login histories')) {
     // This should never happen, but be cautious in case calling code is weak.
     global $user;
@@ -16,6 +16,11 @@ function login_history_report_callback() {
 
   $query = db_select('login_history', 'lh')->extend('TableSort')->extend('PagerDefault');
   $query->join('users', 'u', 'lh.uid = u.uid');
+
+  if ($account) {
+    $query->condition('lh.uid', $account->uid);
+  }
+
   $result = $query
     ->fields('lh')
     ->fields('u', array('name'))
