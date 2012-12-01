@@ -95,12 +95,12 @@ function login_history_block_info() {
 function login_history_block_view($delta = '') {
   switch ($delta) {
     case 'login_history_last':
-        if (user_is_anonymous()) {
-          return;
-        }
-        // Retrieve a list of new users who have subsequently accessed the site successfully.
-        $last_login = login_history_last_login();
-        // $output = theme('login_last_login_block', array('last_login' => $last_login));
+      if (user_is_anonymous()) {
+        return;
+      }
+      // Get information about the user's last login. If no information is
+      // found, the block is not displayed.
+      if ($last_login = login_history_last_login()) {
         $hostname = $last_login->hostname == ip_address() ? t('this ip address') : $last_login->hostname;
         $user_agent = $last_login->user_agent == $_SERVER['HTTP_USER_AGENT'] ? t('this browser') : $last_login->user_agent;
         $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
@@ -111,8 +111,8 @@ function login_history_block_view($delta = '') {
 
         $block['subject'] = t('Last login');
         $block['content'] = $output;
-
-      return $block;
+        return $block;
+      }
   }
 }
 
@@ -120,6 +120,10 @@ function login_history_block_view($delta = '') {
  * Provide data about the last login for a user.
  *
  * @param $account Optional user object. The only thing that matters is the uid.
+ *
+ * @return object|false
+ *   An object containing information about the last login or FALSE if no
+ *   result is found.
  */
 function login_history_last_login($account = NULL) {
   if (user_is_anonymous()) {
@@ -134,5 +138,5 @@ function login_history_last_login($account = NULL) {
                    WHERE uid = :uid
                    ORDER BY login DESC
                    LIMIT 1, 2", array(':uid' => $account->uid))->fetchAll();
-  return $last_login[0];
+  return reset($last_login);
 }
