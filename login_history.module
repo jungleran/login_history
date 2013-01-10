@@ -80,19 +80,19 @@ function login_history_block($op = 'list', $delta = '', $edit = array()) {
             return;
           }
           // Retrieve a list of new users who have subsequently accessed the site successfully.
-          $last_login = login_history_last_login();
-          $hostname = $last_login->hostname == ip_address() ? t('this ip address') : $last_login->hostname;
-          $user_agent = $last_login->user_agent == $_SERVER['HTTP_USER_AGENT'] ? t('this browser') : $last_login->user_agent;
-          $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
-          if (user_access('view own login history')) {
-            global $user;
-            $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/'. $user->uid . '/login_history'))) . '</span>';
+          if ($last_login = login_history_last_login()) {
+            $hostname = $last_login->hostname == ip_address() ? t('this ip address') : $last_login->hostname;
+            $user_agent = $last_login->user_agent == $_SERVER['HTTP_USER_AGENT'] ? t('this browser') : $last_login->user_agent;
+            $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
+            if (user_access('view own login history')) {
+              global $user;
+              $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/'. $user->uid . '/login_history'))) . '</span>';
+            }
+
+            $block['subject'] = t('Last login');
+            $block['content'] = $output;
+            return $block;
           }
-
-          $block['subject'] = t('Last login');
-          $block['content'] = $output;
-
-        return $block;
       }
   }
 }
