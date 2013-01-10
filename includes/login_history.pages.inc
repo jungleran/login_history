@@ -1,6 +1,6 @@
 <?php
 
-function login_history_report_callback() {
+function login_history_report_callback($account = NULL) {
   if (empty($account->uid) && !user_access('view all login histories')) {
     // This should never happen, but be cautious in case calling code is weak.
     global $user;
@@ -14,7 +14,16 @@ function login_history_report_callback() {
     array('data' => t('User Agent'), 'field' => 'lh.user_agent'),
   );
 
-  $query = pager_query("SELECT lh.login, u.name, lh.hostname, lh.one_time, lh.user_agent FROM {login_history} lh INNER JOIN {users} u ON lh.uid = u.uid " . tablesort_sql($header), 50);
+  $sql = "SELECT lh.login, u.name, lh.hostname, lh.one_time, lh.user_agent FROM {login_history} lh INNER JOIN {users} u ON lh.uid = u.uid";
+
+  // Add condition for individual user report.
+  $uid = NULL;
+  if ($account) {
+    $sql .= " WHERE lh.uid = %d";
+    $uid = $account->uid;
+  }
+
+  $query = pager_query($sql . tablesort_sql($header), 50, 0, NULL, $uid);
 
   $result = array();
   while ($row = db_fetch_object($query)) {
