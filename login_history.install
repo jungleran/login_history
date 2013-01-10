@@ -38,8 +38,6 @@ function login_history_update_2() {
   db_drop_field('users', 'last_login');
 }
 
-
-
 /**
  * Implements hook_schema().
  */
@@ -82,7 +80,7 @@ function login_history_schema() {
     'indexes' => array(
       'login_history_uid' => array('uid'),
       'login_history_onetime' => array('one_time'),
-      'login_history_uid_host_ua' => array('uid', 'hostname', 'user_agent'),
+      'login_history_uid_host_ua' => array('uid', 'hostname', array('user_agent', 255)),
     ),
   );
   return $schema;
