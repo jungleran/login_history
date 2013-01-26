@@ -101,7 +101,7 @@ function login_history_block_view($delta = '') {
       // Get information about the user's last login. If no information is
       // found, the block is not displayed.
       if ($last_login = login_history_last_login()) {
-        $hostname = $last_login->hostname == ip_address() ? t('this ip address') : $last_login->hostname;
+        $hostname = $last_login->hostname == ip_address() ? t('this IP address') : $last_login->hostname;
         $user_agent = $last_login->user_agent == $_SERVER['HTTP_USER_AGENT'] ? t('this browser') : $last_login->user_agent;
         $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
         if (user_access('view own login history')) {
