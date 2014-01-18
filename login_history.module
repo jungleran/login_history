@@ -43,19 +43,7 @@ function login_history_menu() {
   $items['admin/reports/login-history'] = array(
     'title' => 'Login history',
     'description' => 'Shows previous login information for site users. Useful for troubleshooting and monitoring.',
-    'page callback' => 'login_history_report_callback',
-    'access arguments' => array('administer users'),
-    'file' => 'includes/login_history.pages.inc',
-  );
-  $items['user/%user/login_history'] = array(
-    'title' => 'Login history',
-    'description' => '',
-    'page callback' => 'login_history_report_callback',
-    'page arguments' => array(1),
-    'access callback' => 'login_history_access_user_history_page',
-    'access arguments' => array(1),
-    'type' => MENU_LOCAL_TASK,
-    'file' => 'includes/login_history.pages.inc',
+    'route_name' => 'login_history.report',
   );
   return $items;
 }

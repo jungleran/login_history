@@ -1,0 +1,16 @@
+login_history.report:
+  path: '/admin/reports/login-history'
+  defaults:
+    _content: '\Drupal\login_history\Controller\LoginHistoryController::report'
+    _title: 'Login history'
+  requirements:
+    _permission: 'administer users'
+
+login_history.user_report:
+  path: '/user/{user}/login-history'
+  defaults:
+    _content: '\Drupal\login_history\Controller\LoginHistoryController::report'
+    _title: 'Login history'
+  requirements:
+    _permission: 'view all login histories'
+    # @todo Add custom access check.
