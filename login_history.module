@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Records a history of the site's user logins.
+ */
+
+/**
  * Implements hook_user_login().
  * The user just logged in.
  *
