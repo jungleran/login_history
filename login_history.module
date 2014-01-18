@@ -14,17 +14,14 @@
  */
 function login_history_user_login($account) {
   $request = \Drupal::request();
-  // @todo Make this work, can we determine what the route is? The one-time
-  //   login route is user.reset.
   // Is this a one-time login?
-  // $request_array = explode('/', $_GET['q']);
-  // if ($request_array[0] == 'user' && isset($request_array[1]) && $request_array[1] == 'reset' && $request_array[5] == 'login') {
-  //   $one_time = 1;
-  // }
-  // else {
-  //   $one_time = 0;
-  // }
-  $one_time = 0;
+  $route = \Drupal::service('router')->matchRequest($request);
+  if ($route['_route'] == 'user.reset' && $route['operation'] == 'login') {
+    $one_time = 1;
+  }
+  else {
+    $one_time = 0;
+  }
 
   // Now save the user's current login timestamp to login_history.
   db_insert('login_history')
