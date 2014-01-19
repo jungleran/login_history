@@ -67,6 +67,13 @@ class LoginHistoryController extends ControllerBase {
    * @todo Add XML output format.
    */
   function generateReport(array $history, $format = 'table', array $header = array()) {
+    // Load all users first.
+    $uids = array();
+    foreach ($history as $entry) {
+      $uids[] = $entry->uid;
+    }
+    $users = user_load_multiple($uids);
+
     switch ($format) {
       case 'text':
         // Output delimiter in first line, since this may change.
@@ -76,7 +83,7 @@ class LoginHistoryController extends ControllerBase {
           $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
           $row = array(
             format_date($entry->login, 'small'),
-            check_plain(format_username($entry->uid)),
+            check_plain($users[$entry->uid]->getUsername()),
             check_plain($entry->hostname),
             empty($entry->one_time) ? t('Regular login') : t('One-time login'),
             check_plain($entry->user_agent),
@@ -90,7 +97,7 @@ class LoginHistoryController extends ControllerBase {
         foreach ($history as $entry) {
           $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
           $output .= '<li>';
-          $output .= '<span class="login-history-info">' . check_plain(format_username($entry)) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
+          $output .= '<span class="login-history-info">' . check_plain($users[$entry->uid]->getUsername()) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
           $output .= '</li>';
         }
         if ($output) {
@@ -104,7 +111,7 @@ class LoginHistoryController extends ControllerBase {
         foreach ($history as $entry) {
           $rows[] = array(
             format_date($entry->login, 'small'),
-            check_plain(format_username($entry)),
+            check_plain($users[$entry->uid]->getUsername()),
             check_plain($entry->hostname),
             empty($entry->one_time) ? t('Regular login') : t('One-time login'),
             check_plain($entry->user_agent),
