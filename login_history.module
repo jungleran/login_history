@@ -5,6 +5,8 @@
  * Records a history of the site's user logins.
  */
 
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Implements hook_user_login().
  * The user just logged in.
@@ -113,18 +115,17 @@ function login_history_block_view($delta = '') {
  *   An object containing information about the last login or FALSE if no
  *   result is found.
  */
-function login_history_last_login($account = NULL) {
+function login_history_last_login(AccountInterface $account = NULL) {
   if (user_is_anonymous()) {
     return;
   }
   if (empty($account)) {
-    global $user;
-    $account = $user;
+    $account = \Drupal::currentUser();
   }
   $last_login = db_query("SELECT login, hostname, one_time, user_agent
                    FROM {login_history}
                    WHERE uid = :uid
                    ORDER BY login DESC
-                   LIMIT 1, 2", array(':uid' => $account->uid))->fetchAll();
+                   LIMIT 1, 2", array(':uid' => $account->id()))->fetchAll();
   return reset($last_login);
 }
