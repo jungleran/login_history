@@ -68,45 +68,6 @@ function login_history_permission() {
 }
 
 /**
- * Implements hook_block_info().
- */
-function login_history_block_info() {
-  // Show their last login info.
-  $blocks['login_history_last']['info'] = t("Last login");
-  $blocks['login_history_last']['properties']['administrative'] = TRUE;
-  $blocks['login_history_last']['cache'] = DRUPAL_CACHE_PER_USER;
-
-  return $blocks;
-}
-
-/**
- * Implements hook_block_view().
- */
-function login_history_block_view($delta = '') {
-  switch ($delta) {
-    case 'login_history_last':
-      if (user_is_anonymous()) {
-        return;
-      }
-      // Get information about the user's last login. If no information is
-      // found, the block is not displayed.
-      if ($last_login = login_history_last_login()) {
-        $hostname = $last_login->hostname == ip_address() ? t('this IP address') : $last_login->hostname;
-        $user_agent = $last_login->user_agent == $_SERVER['HTTP_USER_AGENT'] ? t('this browser') : $last_login->user_agent;
-        $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
-        if (user_access('view own login history')) {
-          global $user;
-          $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/'. $user->uid . '/login_history'))) . '</span>';
-        }
-
-        $block['subject'] = t('Last login');
-        $block['content'] = $output;
-        return $block;
-      }
-  }
-}
-
-/**
  * Provide data about the last login for a user.
  *
  * @param $account Optional user object. The only thing that matters is the uid.
