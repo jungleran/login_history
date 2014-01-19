@@ -65,10 +65,6 @@ function login_history_permission() {
     ));
 }
 
-function login_history_access_user_history_page($account) {
-  return ($account->uid == $GLOBALS['user']->uid && user_access('view own login history')) || user_access('view all login histories');
-}
-
 /**
  * Implements hook_block_info().
  */

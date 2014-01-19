@@ -12,5 +12,4 @@ login_history.user_report:
     _content: '\Drupal\login_history\Controller\LoginHistoryController::report'
     _title: 'Login history'
   requirements:
-    _permission: 'view all login histories'
-    # @todo Add custom access check.
+    _custom_access: '\Drupal\login_history\Controller\LoginHistoryController::checkUserReportAccess'
