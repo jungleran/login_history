@@ -38,23 +38,6 @@ function login_history_user_login($account) {
 }
 
 /**
- * Implements hook_menu().
- * Define menu items and page callbacks.
- *
- * @return
- *   An array of menu items.
- */
-function login_history_menu() {
-  $items = array();
-  $items['admin/reports/login-history'] = array(
-    'title' => 'Login history',
-    'description' => 'Shows previous login information for site users. Useful for troubleshooting and monitoring.',
-    'route_name' => 'login_history.report',
-  );
-  return $items;
-}
-
-/**
  * Implements hook_permission().
  */
 function login_history_permission() {
