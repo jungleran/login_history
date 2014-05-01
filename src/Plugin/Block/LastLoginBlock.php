@@ -25,7 +25,7 @@ class LastLoginBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function access(AccountInterface $account) {
-    return !user_is_anonymous();
+    return $account->isAuthenticated();
   }
 
   /**

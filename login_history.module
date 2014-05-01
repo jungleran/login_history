@@ -53,18 +53,19 @@ function login_history_permission() {
 /**
  * Provide data about the last login for a user.
  *
- * @param $account Optional user object. The only thing that matters is the uid.
+ * @param \Drupal\Core\Session\AccountInterface $account
+ *   An optional user to get the last login for.
  *
  * @return object|false
  *   An object containing information about the last login or FALSE if no
  *   result is found.
  */
 function login_history_last_login(AccountInterface $account = NULL) {
-  if (user_is_anonymous()) {
-    return;
-  }
-  if (empty($account)) {
+  if (!$account) {
     $account = \Drupal::currentUser();
+  }
+  if ($account->isAnonymous()) {
+    return;
   }
   $last_login = db_query("SELECT login, hostname, one_time, user_agent
                    FROM {login_history}
