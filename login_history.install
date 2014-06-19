@@ -39,6 +39,14 @@ function login_history_update_2() {
 }
 
 /**
+ * Remove the index on the user agent column.
+ */
+function login_history_update_7100() {
+  db_drop_index('login_history', 'login_history_uid_host_ua');
+  db_add_index('login_history', 'login_history_uid_host', array('uid', 'hostname'));
+}
+
+/**
  * Implements hook_schema().
  */
 function login_history_schema() {
@@ -80,7 +88,7 @@ function login_history_schema() {
     'indexes' => array(
       'login_history_uid' => array('uid'),
       'login_history_onetime' => array('one_time'),
-      'login_history_uid_host_ua' => array('uid', 'hostname', array('user_agent', 255)),
+      'login_history_uid_host' => array('uid', 'hostname'),
     ),
   );
   return $schema;
