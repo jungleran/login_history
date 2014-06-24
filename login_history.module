@@ -25,6 +25,13 @@ function login_history_user_login($account) {
     $one_time = 0;
   }
 
+  // Limit user agent strings to 255 characters. For example, some versions of
+  // IE8 return long user agent strings causing an error upon login.
+  $user_agent = $request->server->get('HTTP_USER_AGENT');
+  if (strlen($user_agent) > 255) {
+    $user_agent = substr($user_agent, 0, 255);
+  }
+
   // Now save the user's current login timestamp to login_history.
   db_insert('login_history')
     ->fields(array(
@@ -32,7 +39,7 @@ function login_history_user_login($account) {
       'login' => $account->getLastLoginTime(),
       'hostname' => $request->getClientIP(),
       'one_time' => $one_time,
-      'user_agent' => $request->server->get('HTTP_USER_AGENT'),
+      'user_agent' => $user_agent,
     ))
     ->execute();
 }
