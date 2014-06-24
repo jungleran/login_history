@@ -29,7 +29,7 @@ class LoginHistoryController extends ControllerBase {
       array('data' => t('Username'), 'field' => 'u.name'),
       array('data' => t('IP Address'), 'field' => 'lh.hostname'),
       array('data' => t('One-time login?'), 'field' => 'lh.one_time'),
-      array('data' => t('User Agent'), 'field' => 'lh.user_agent'),
+      array('data' => t('User Agent')),
     );
 
     $query = db_select('login_history', 'lh')
