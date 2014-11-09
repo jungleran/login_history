@@ -11,6 +11,7 @@ use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Component\Utility\String;
 
 /**
  * Controller routines for Login history routes.
@@ -83,10 +84,10 @@ class LoginHistoryController extends ControllerBase {
           $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
           $row = array(
             format_date($entry->login, 'small'),
-            check_plain($users[$entry->uid]->getUsername()),
-            check_plain($entry->hostname),
+            String::checkPlain($users[$entry->uid]->getUsername()),
+            String::checkPlain($entry->hostname),
             empty($entry->one_time) ? t('Regular login') : t('One-time login'),
-            check_plain($entry->user_agent),
+            String::checkPlain($entry->user_agent),
           );
           $output .= implode("\t", $row) . "\n";
         }
@@ -97,7 +98,7 @@ class LoginHistoryController extends ControllerBase {
         foreach ($history as $entry) {
           $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
           $output .= '<li>';
-          $output .= '<span class="login-history-info">' . check_plain($users[$entry->uid]->getUsername()) . ' ' . format_date($entry->login, 'small') . ' ' . check_plain($entry->hostname) . ' ' . $one_time . ' ' . check_plain($entry->user_agent) . '</span>';
+          $output .= '<span class="login-history-info">' . String::checkPlain($users[$entry->uid]->getUsername()) . ' ' . format_date($entry->login, 'small') . ' ' . String::checkPlain($entry->hostname) . ' ' . $one_time . ' ' . String::checkPlain($entry->user_agent) . '</span>';
           $output .= '</li>';
         }
         if ($output) {
@@ -111,10 +112,10 @@ class LoginHistoryController extends ControllerBase {
         foreach ($history as $entry) {
           $rows[] = array(
             format_date($entry->login, 'small'),
-            check_plain($users[$entry->uid]->getUsername()),
-            check_plain($entry->hostname),
+            String::checkPlain($users[$entry->uid]->getUsername()),
+            String::checkPlain($entry->hostname),
             empty($entry->one_time) ? t('Regular login') : t('One-time login'),
-            check_plain($entry->user_agent),
+            String::checkPlain($entry->user_agent),
           );
         }
         $output['history'] = array(
