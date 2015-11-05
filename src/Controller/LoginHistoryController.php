@@ -9,6 +9,7 @@ namespace Drupal\login_history\Controller;
 
 use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Utility\String;
@@ -73,7 +74,7 @@ class LoginHistoryController extends ControllerBase {
     foreach ($history as $entry) {
       $uids[] = $entry->uid;
     }
-    $users = user_load_multiple($uids);
+    $users = User::loadMultiple($uids);
 
     switch ($format) {
       case 'text':
