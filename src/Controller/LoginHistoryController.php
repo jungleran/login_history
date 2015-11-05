@@ -7,7 +7,7 @@
 
 namespace Drupal\login_history\Controller;
 
-use Drupal\Core\Access\AccessInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
@@ -140,13 +140,12 @@ class LoginHistoryController extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request to check access for.
    */
-  public function checkUserReportAccess(Request $request) {
-    $user = $request->get('user');
+  public function checkUserReportAccess(UserInterface $user = NULL) {
     // Allow access if the user is viewing their own report and has permission
     // or if the user has permission to view all login history reports.
     $access = ($user->id() == $this->currentUser()->id() && $this->currentUser->hasPermission('view own login history'))
       || $this->currentUser->hasPermission('view all login histories');
-    return ($access) ? AccessInterface::ALLOW : AccessInterface::DENY;
+    return AccessResult::allowedIf($access);
   }
 
 }
