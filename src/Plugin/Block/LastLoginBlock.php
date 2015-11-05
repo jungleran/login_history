@@ -7,8 +7,8 @@
 
 namespace Drupal\login_history\Plugin\Block;
 
+use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\block\BlockBase;
 
 /**
  * Provides a block with information about the user's last login.
@@ -24,20 +24,8 @@ class LastLoginBlock extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function access(AccountInterface $account) {
+  public function blockAccess(AccountInterface $account) {
     return $account->isAuthenticated();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
-    return array(
-      // @todo What is 'administrative' doing if anything?
-      'properties' => array(
-        'administrative' => TRUE,
-      ),
-    );
   }
 
   /**
