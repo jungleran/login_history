@@ -45,19 +45,6 @@ function login_history_user_login($account) {
 }
 
 /**
- * Implements hook_permission().
- */
-function login_history_permission() {
-  return array(
-    'view own login history' =>  array(
-      'title' => t('View own login history'),
-    ),
-    'view all login histories' =>  array(
-      'title' => t('View all login histories'),
-    ));
-}
-
-/**
  * Provide data about the last login for a user.
  *
  * @param \Drupal\Core\Session\AccountInterface $account
