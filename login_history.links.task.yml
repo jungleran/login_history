@@ -1,4 +1,4 @@
 login_history.user_report:
   route_name: login_history.user_report
-  base_route: user.view
+  base_route: entity.user.canonical
   title: Login history
