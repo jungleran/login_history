@@ -18,7 +18,7 @@ function login_history_user_login($account) {
   $request = \Drupal::request();
   // Is this a one-time login?
   $route = \Drupal::service('router')->matchRequest($request);
-  if ($route['_route'] == 'user.reset' && $route['operation'] == 'login') {
+  if ($route['_route'] == 'user.reset') {
     $one_time = 1;
   }
   else {
