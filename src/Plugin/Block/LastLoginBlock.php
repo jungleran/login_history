@@ -10,6 +10,7 @@ namespace Drupal\login_history\Plugin\Block;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 
 /**
  * Provides a block with information about the user's last login.
@@ -41,7 +42,11 @@ class LastLoginBlock extends BlockBase {
       $build['last_login']['#markup'] = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
       $user = \Drupal::currentUser();
       if ($user->hasPermission('view own login history')) {
-        $build['view_report']['#markup'] = '<span class="read-more">' . l(t('View your login history'), 'user/'. $user->id() . '/login-history') . '</span>';
+        $build['view_report'] = [
+          '#type' => 'more_link',
+          '#title' => $this->t('View your login history'),
+          '#url' => Url::fromRoute('login_history.user_report', ['user' => $user->id()]),
+        ];
       }
     }
     return $build;
