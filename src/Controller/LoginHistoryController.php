@@ -54,23 +54,21 @@ class LoginHistoryController extends ControllerBase {
       ->execute()
       ->fetchAll();
 
-    return $this->generateReport($result, 'table', $header);
+    return $this->generateReportTable($result, $header);
   }
 
   /**
-   * Render login histories.
+   * Renders login histories as a table.
    *
-   * @param $history
+   * @param array $history
    *   A list of login history objects to output.
-   * @param $format
-   *   (optional) The format to output log entries in; one of 'table', 'list' or
-   *   'text'.
-   * @param $header
-   *   (optional) An array containing header data for $format 'table'.
+   * @param array $header
+   *   An array containing table header data.
    *
-   * @todo Add XML output format.
+   * @return array
+   *   A table render array.
    */
-  function generateReport(array $history, $format = 'table', array $header = array()) {
+  function generateReportTable(array $history, array $header) {
     // Load all users first.
     $uids = array();
     foreach ($history as $entry) {
@@ -78,60 +76,25 @@ class LoginHistoryController extends ControllerBase {
     }
     $users = User::loadMultiple($uids);
 
-    switch ($format) {
-      case 'text':
-        // Output delimiter in first line, since this may change.
-        $output = '\t' . "\n";
-
-        foreach ($history as $entry) {
-          $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
-          $row = array(
-            format_date($entry->login, 'small'),
-            Html::escape($users[$entry->uid]->getUsername()),
-            Html::escape($entry->hostname),
-            empty($entry->one_time) ? t('Regular login') : t('One-time login'),
-            Html::escape($entry->user_agent),
-          );
-          $output .= implode("\t", $row) . "\n";
-        }
-        break;
-
-      case 'list':
-        $output = '';
-        foreach ($history as $entry) {
-          $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
-          $output .= '<li>';
-          $output .= '<span class="login-history-info">' . Html::escape($users[$entry->uid]->getUsername()) . ' ' . format_date($entry->login, 'small') . ' ' . Html::escape($entry->hostname) . ' ' . $one_time . ' ' . Html::escape($entry->user_agent) . '</span>';
-          $output .= '</li>';
-        }
-        if ($output) {
-          $output = '<ul id="login-history-backlog">' . $output . '</ul>';
-        }
-        break;
-
-      case 'table':
-      default:
-        $rows = array();
-        foreach ($history as $entry) {
-          $rows[] = array(
-            format_date($entry->login, 'small'),
-            $users[$entry->uid]->getUsername(),
-            $entry->hostname,
-            empty($entry->one_time) ? t('Regular login') : t('One-time login'),
-            $entry->user_agent,
-          );
-        }
-        $output['history'] = array(
-          '#theme' => 'table',
-          '#header' => $header,
-          '#rows' => $rows,
-          '#empty' => t('No login history available.'),
-        );
-        $output['pager'] = array(
-          '#type' => 'pager',
-        );
-        break;
+    $rows = array();
+    foreach ($history as $entry) {
+      $rows[] = array(
+        format_date($entry->login, 'small'),
+        $users[$entry->uid]->getUsername(),
+        $entry->hostname,
+        empty($entry->one_time) ? t('Regular login') : t('One-time login'),
+        $entry->user_agent,
+      );
     }
+    $output['history'] = array(
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => t('No login history available.'),
+    );
+    $output['pager'] = array(
+      '#type' => 'pager',
+    );
 
     return $output;
   }
