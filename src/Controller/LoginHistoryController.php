@@ -102,8 +102,8 @@ class LoginHistoryController extends ControllerBase {
   /**
    * Checks access for the user login report.
    *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request to check access for.
+   * @param \Drupal\user\UserInterface $user
+   *   The user to check access for.
    */
   public function checkUserReportAccess(UserInterface $user = NULL) {
     // Allow access if the user is viewing their own report and has permission
