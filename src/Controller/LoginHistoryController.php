@@ -28,7 +28,7 @@ class LoginHistoryController extends ControllerBase {
   public function report(UserInterface $user = NULL) {
     $header = array(
       array('data' => t('Date'), 'field' => 'lh.login', 'sort' => 'desc'),
-      array('data' => t('Username'), 'field' => 'u.name'),
+      array('data' => t('Username'), 'field' => 'ufd.name'),
       array('data' => t('IP Address'), 'field' => 'lh.hostname'),
       array('data' => t('One-time login?'), 'field' => 'lh.one_time'),
       array('data' => t('User Agent')),
@@ -39,6 +39,7 @@ class LoginHistoryController extends ControllerBase {
       ->extend('Drupal\Core\Database\Query\PagerSelectExtender');
 
     $query->join('users', 'u', 'lh.uid = u.uid');
+    $query->join('users_field_data', 'ufd', 'u.uid = ufd.uid');
 
     if ($user) {
       $query->condition('lh.uid', $user->id());
@@ -46,7 +47,8 @@ class LoginHistoryController extends ControllerBase {
 
     $result = $query
       ->fields('lh')
-      ->fields('u', array('name'))
+      ->fields('u', array('uid'))
+      ->fields('ufd', array('name'))
       ->orderByHeader($header)
       ->limit(50)
       ->execute()
