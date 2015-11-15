@@ -10,14 +10,35 @@ namespace Drupal\login_history\Controller;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Controller routines for Login history routes.
  */
 class LoginHistoryController extends ControllerBase {
+
+  /**
+   * Constructs a \Drupal\login_history\Controller\LoginHistoryController object.
+   *
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *    The date formatter service.
+   */
+  public function __construct(DateFormatterInterface $date_formatter) {
+    $this->dateFormatter = $date_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('date.formatter')
+    );
+  }
 
   /**
    * Displays a report of user logins.
@@ -82,7 +103,7 @@ class LoginHistoryController extends ControllerBase {
     $rows = array();
     foreach ($history as $entry) {
       $rows[] = array(
-        format_date($entry->login, 'small'),
+        $this->dateFormatter->format($entry->login, 'small'),
         $users[$entry->uid]->getUsername(),
         $entry->hostname,
         empty($entry->one_time) ? t('Regular login') : t('One-time login'),
