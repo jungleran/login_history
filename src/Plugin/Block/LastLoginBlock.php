@@ -58,12 +58,4 @@ class LastLoginBlock extends BlockBase {
     return $build;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  protected function getRequiredCacheContexts() {
-    // This block needs to be cached per user.
-    return array('cache_context.user');
-  }
-
 }
