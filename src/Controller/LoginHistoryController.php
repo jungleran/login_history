@@ -22,8 +22,11 @@ class LoginHistoryController extends ControllerBase {
   /**
    * Displays a report of user logins.
    *
+   * @param \Drupal\user\UserInterface $user
+   *   (optional) The user to display for individual user reports.
+   *
    * @return array
-   *   A render array as expected by drupal_render().
+   *   A render array.
    */
   public function report(UserInterface $user = NULL) {
     $header = array(
