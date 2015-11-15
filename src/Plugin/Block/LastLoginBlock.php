@@ -7,6 +7,7 @@
 
 namespace Drupal\login_history\Plugin\Block;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Session\AccountInterface;
 
@@ -25,7 +26,7 @@ class LastLoginBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function blockAccess(AccountInterface $account) {
-    return $account->isAuthenticated();
+    return AccessResult::allowedIf($account->isAuthenticated());
   }
 
   /**
