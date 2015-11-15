@@ -115,10 +115,10 @@ class LoginHistoryController extends ControllerBase {
         foreach ($history as $entry) {
           $rows[] = array(
             format_date($entry->login, 'small'),
-            String::checkPlain($users[$entry->uid]->getUsername()),
-            String::checkPlain($entry->hostname),
+            $users[$entry->uid]->getUsername(),
+            $entry->hostname,
             empty($entry->one_time) ? t('Regular login') : t('One-time login'),
-            String::checkPlain($entry->user_agent),
+            $entry->user_agent,
           );
         }
         $output['history'] = array(
