@@ -128,7 +128,7 @@ class LoginHistoryController extends ControllerBase {
           '#empty' => t('No login history available.'),
         );
         $output['pager'] = array(
-          '#theme' => 'pager',
+          '#type' => 'pager',
         );
         break;
     }
