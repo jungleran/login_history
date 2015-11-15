@@ -49,6 +49,12 @@ class LastLoginBlock extends BlockBase {
         ];
       }
     }
+    // Cache by session.
+    $build['#cache'] = [
+      'contexts' => [
+        'session',
+      ],
+    ];
     return $build;
   }
 
