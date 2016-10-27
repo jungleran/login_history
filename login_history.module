@@ -10,8 +10,8 @@
  */
 function login_history_user_login(&$edit, $account) {
   // Is this a one-time login?
-  $request_array = explode('/', $_GET['q']);
-  if ($request_array[0] == 'user' && isset($request_array[1]) && $request_array[1] == 'reset' && $request_array[5] == 'login') {
+  $menu_item = menu_get_item();
+  if ('user/reset/%/%/%' == $menu_item['path']) {
     $one_time = 1;
   }
   else {
