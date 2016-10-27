@@ -6,6 +6,16 @@
  */
 
 /**
+ * Implements hook_views_api().
+ */
+function login_history_views_api() {
+  return array(
+    'api' => '3.0',
+    'path' => drupal_get_path('module', 'login_history') . '/views',
+  );
+}
+
+/**
  * Implements hook_user_login().
  */
 function login_history_user_login(&$edit, $account) {
