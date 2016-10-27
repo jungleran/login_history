@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * @file
+ * The login history page-related code.
+ */
+
+/**
+ * Page callback for the login history page.
+ *
+ * @param object $account
+ *   Optional user object.
+ *
+ * @return string
+ *   A string of html to be printed.
+ */
 function login_history_report_callback($account = NULL) {
   if (empty($account->uid) && !user_access('view all login histories')) {
     // This should never happen, but be cautious in case calling code is weak.
@@ -35,15 +49,17 @@ function login_history_report_callback($account = NULL) {
 /**
  * Render login histories.
  *
- * @param $history
- *   A list of login history objects to output.
- * @param $format
- *   (optional) The format to output log entries in; one of 'table', 'list' or
- *   'text'.
- * @param $header
- *   (optional) An array containing header data for $format 'table'.
- *
  * @todo Add XML output format.
+ *
+ * @param array $history
+ *   A list of login history objects to output.
+ * @param string $format
+ *   Optional format to output log entries in; 'table', 'list', or 'text'.
+ * @param array $header
+ *   Optional An array containing header data for $format 'table'.
+ *
+ * @return array|string
+ *   A render array by default (for table) but a string in other cases.
  */
 function login_history_output(array $history, $format = 'table', array $header = array()) {
   switch ($format) {
@@ -52,7 +68,6 @@ function login_history_output(array $history, $format = 'table', array $header =
       $output = '\t' . "\n";
 
       foreach ($history as $entry) {
-        $one_time = empty($entry->one_time) ? t('Regular login') : t('One-time login');
         $row = array(
           format_date($entry->login, 'small'),
           check_plain(format_username($entry->uid)),

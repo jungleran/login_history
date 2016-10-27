@@ -1,13 +1,12 @@
 <?php
 
 /**
+ * @file
+ * The login history module.
+ */
+
+/**
  * Implements hook_user_login().
- * The user just logged in.
- *
- * @param $edit
- *   The array of form values submitted by the user.
- * @param $account
- *   The user object on which the operation was just performed.
  */
 function login_history_user_login(&$edit, $account) {
   // Is this a one-time login?
@@ -40,10 +39,6 @@ function login_history_user_login(&$edit, $account) {
 
 /**
  * Implements hook_menu().
- * Define menu items and page callbacks.
- *
- * @return
- *   An array of menu items.
  */
 function login_history_menu() {
   $items = array();
@@ -72,14 +67,23 @@ function login_history_menu() {
  */
 function login_history_permission() {
   return array(
-    'view own login history' =>  array(
+    'view own login history' => array(
       'title' => t('View own login history'),
     ),
-    'view all login histories' =>  array(
+    'view all login histories' => array(
       'title' => t('View all login histories'),
     ));
 }
 
+/**
+ * Access callback for the user-specific Login History page.
+ *
+ * @param object $account
+ *   A user object.
+ *
+ * @return bool
+ *   TRUE if the user can access the page.
+ */
 function login_history_access_user_history_page($account) {
   return ($account->uid == $GLOBALS['user']->uid && user_access('view own login history')) || user_access('view all login histories');
 }
@@ -113,7 +117,7 @@ function login_history_block_view($delta = '') {
         $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
         if (user_access('view own login history')) {
           global $user;
-          $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/'. $user->uid . '/login_history'))) . '</span>';
+          $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/' . $user->uid . '/login_history'))) . '</span>';
         }
 
         $block['subject'] = t('Last login');
@@ -126,7 +130,8 @@ function login_history_block_view($delta = '') {
 /**
  * Provide data about the last login for a user.
  *
- * @param $account Optional user object. The only thing that matters is the uid.
+ * @param object $account
+ *   Optional user object. The only thing that really matters is the uid.
  *
  * @return object|false
  *   An object containing information about the last login or FALSE if no

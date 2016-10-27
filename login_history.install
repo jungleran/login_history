@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * The login history install/uninstall code.
+ */
 
 /**
  * Add some more data to the login_history table to provide for more features.
