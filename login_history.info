@@ -1,4 +1,5 @@
 name = Login History
 description = A history of the site's user logins.
 core = 7.x
+files[] = tests/login_history.test
 configure = admin/reports/login-history
