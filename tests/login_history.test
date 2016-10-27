@@ -85,7 +85,7 @@ class LoginHistoryTestCase extends DrupalWebTestCase {
     $this->drupalLogin($this->web_user);
 
     $this->drupalGet('user');
-    $this->drupalGet('user/' . $this->web_user->uid . '/login_history');
+    $this->drupalGet('user/' . $this->web_user->uid . '/login-history');
     $this->assertText('One-time login?');
     $this->assertRaw('<td>' . $this->web_user->name . '</td>', t("Find web user's username in a cell of the report."));
     $this->assertNoRaw('<td>' . $this->admin_user->name . '</td>', t("Don't tind admin's username in a cell of the user-specific report."));

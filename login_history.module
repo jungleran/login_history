@@ -49,7 +49,7 @@ function login_history_menu() {
     'access arguments' => array('administer users'),
     'file' => 'includes/login_history.pages.inc',
   );
-  $items['user/%user/login_history'] = array(
+  $items['user/%user/login-history'] = array(
     'title' => 'Login history',
     'description' => '',
     'page callback' => 'login_history_report_callback',
@@ -117,7 +117,7 @@ function login_history_block_view($delta = '') {
         $output = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
         if (user_access('view own login history')) {
           global $user;
-          $output .= '<span class="read-more">' . t('<a href="@link">View your login history.</a>', array('@link' => url('user/' . $user->uid . '/login_history'))) . '</span>';
+          $output .= '<span class="read-more">' . l(t('View your login history.'), 'user/' . $user->uid . '/login-history') . '</span>';
         }
 
         $block['subject'] = t('Last login');

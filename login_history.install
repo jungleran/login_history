@@ -97,3 +97,10 @@ function login_history_schema() {
   );
   return $schema;
 }
+
+/**
+ * Clear the menu cache.
+ */
+function login_history_update_7101() {
+  menu_rebuild();
+}
