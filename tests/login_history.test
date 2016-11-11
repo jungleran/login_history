@@ -24,7 +24,7 @@ class LoginHistoryTestCase extends DrupalWebTestCase {
   public static function getInfo() {
     return array(
       'name' => 'Login History',
-      'description' => 'Test login history module functionality.',
+      'description' => 'Test Login History module functionality.',
       'group' => 'Login History',
     );
   }
