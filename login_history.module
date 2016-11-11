@@ -73,6 +73,10 @@ function login_history_user_login(&$edit, $account) {
   user_cookie_save(array('login_history' => $login_history_cookie));
 
   module_invoke_all('login_history_detection_results', $login_id, $detection, $old_device_id, $device_id, $account);
+
+  if (variable_get('login_history_mail_on_new_login_device', FALSE)) {
+    login_history_send_mail_new_login_device($login_id, $detection, $old_device_id, $device_id, $account);
+  }
 }
 
 /**
@@ -165,17 +169,88 @@ function login_history_block_view($delta = '') {
   }
 }
 
+
+/**
+ * Determines if an email should be sent to a visitor for a login on a "new" device.
+ *
+ * @param int $login_id
+ *   The primary key login_id of login_history.
+ * @param array $detection
+ *   An array of detection data.
+ * @param string $old_device_id
+ *   An old device id if present/valid, or an empty string.
+ * @param string $device_id
+ *   The new device id.
+ * @param object $account
+ *   A Drupal user object.
+ */
+function login_history_send_mail_new_login_device($login_id, $detection, $old_device_id, $device_id, $account) {
+  // In any case that the old device id is valid, don't send an email.
+  if (!empty($old_device_id)) {
+    return;
+  }
+
+  // If old device id is empty and this is the first login we know of, don't send an email.
+  $old_logins_for_uid = login_history_last_login($account, NULL, $login_id);
+  if (empty($old_logins_for_uid)) {
+    return;
+  }
+
+  // If cookies got deleted, but they've logged in on a device that matches this fingerprint it's OK.
+  $old_logins_for_uid_and_device = login_history_last_login($account, $device_id, $login_id);
+  if (!empty($old_logins_for_uid_and_device)) {
+    return;
+  }
+
+  drupal_mail('login_history', 'login_history_new_device', $account->mail, user_preferred_language($account), array(
+      'account' => $account,
+      'detection' => $detection,
+    )
+  );
+}
+
+/**
+ * Implements hook_mail().
+ */
+function login_history_mail($key, &$message, $params){
+  if ('login_history_new_device' == $key) {
+    $language = $message['language'];
+    $langcode = isset($language->language) ? $language->language : NULL;
+    $subject = t('New device login for [user:name] at [site:name]', array(), array('langcode' => $langcode));
+    $body = t("[user:name], a new device or browser logged in to your CARD.com account:
+When: [current-date:short]
+IP Address: @hostname
+Device & Browser: @user_agent
+
+Tip: Don't recognize this login? When in doubt, it is safer to reset your password and ensure your account is healthy.
+
+--  [site:name] team", array(
+      '@user_agent' => $params['detection']['user_agent'],
+      '@hostname' => ip_address(),
+    ), array('langcode' => $langcode));
+
+    $variables = array('user' => $params['account']);
+    $message['subject'] = token_replace($subject, $variables, array('language' => $language, 'callback' => 'user_mail_tokens', 'sanitize' => FALSE, 'clear' => TRUE));
+    $message['body'][] = token_replace($body, $variables, array('language' => $language, 'callback' => 'user_mail_tokens', 'sanitize' => FALSE, 'clear' => TRUE));
+  }
+}
+
+
 /**
  * Provide data about the last login for a user.
  *
  * @param object $account
  *   Optional user object. The only thing that really matters is the uid.
+ * @param string $device_id
+ *   Optional device id to look for.
+ * @param int $login_id_to_avoid
+ *   An optional login id primary key to exclude from results.
  *
  * @return object|false
  *   An object containing information about the last login or FALSE if no
  *   result is found.
  */
-function login_history_last_login($account = NULL) {
+function login_history_last_login($account = NULL, $device_id = NULL, $login_id_to_avoid = NULL) {
   if (user_is_anonymous()) {
     return;
   }
@@ -183,10 +258,20 @@ function login_history_last_login($account = NULL) {
     global $user;
     $account = $user;
   }
-  $last_login = db_query("SELECT login, hostname, one_time, user_agent
-                   FROM {login_history}
-                   WHERE uid = :uid
-                   ORDER BY login DESC
-                   LIMIT 1, 2", array(':uid' => $account->uid))->fetchAll();
+
+  $select = db_select('login_history', 'lh')
+    ->fields('lh', array('login', 'hostname', 'one_time', 'user_agent', 'device_id'))
+    ->condition('lh.uid', $account->uid)
+    ->range(0, 1);
+
+  if (!empty($device_id)) {
+    $select->condition('lh.device_id', $device_id);
+  }
+  if (!empty($login_id_to_avoid)) {
+    $select->condition('lh.login_id', $login_id_to_avoid, '<>');
+  }
+
+  $last_login = $select->execute()->fetchAll();
+
   return reset($last_login);
 }
