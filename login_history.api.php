@@ -42,3 +42,20 @@ function hook_login_history_detect_device_alter($detection, $edit, $account) {
 function hook_login_history_detection_results($login_id, $detection, $old_device_id, $device_id, $account) {
 
 }
+
+/**
+ * Allow modules to say that a specific login is not new.
+ *
+ * @param array $detection
+ *   An array of key->value strings that describe a login. Includes user_agent
+ *   at the start. Modules can add data.
+ * @param $account
+ *   The user account that is logging in. Implementers should take care not
+ *   to modify this data.
+ * @param $previously_detected
+ *   A boolean that starts as FALSE and can be used to indicate a login is not
+ *   new. NOTE: Modules should generally leave it as TRUE if it starts as TRUE.
+ */
+function hook_login_history_detect_new_login_alter($detection, $account, &$previously_detected) {
+  $previously_detected = $previously_detected || FALSE;
+}

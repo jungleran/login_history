@@ -202,6 +202,13 @@ function login_history_send_mail_new_login_device($login_id, $detection, $old_de
     return;
   }
 
+  // Allow other modules to add their own decision about the newness.
+  $previously_detected = FALSE;
+  drupal_alter('login_history_detect_new_login', $detection, $account, $previously_detected);
+  if ($previously_detected) {
+    return;
+  }
+
   drupal_mail('login_history', 'login_history_new_device', $account->mail, user_preferred_language($account), array(
       'account' => $account,
       'detection' => $detection,
