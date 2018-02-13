@@ -35,7 +35,7 @@ function login_history_user_login(&$edit, $account) {
   }
   catch (Exception $e) {
     $old_device_id = '';
-    watchdog_exception('login_history', $e);
+    watchdog_exception('login_history', $e, NULL, array(), WATCHDOG_NOTICE);
   }
 
   // Perform some default gathering of info about the login event.
