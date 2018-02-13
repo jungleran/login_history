@@ -55,6 +55,7 @@ function login_history_update_7100() {
  */
 function login_history_schema() {
   $schema['login_history'] = array(
+    'description' => 'Base table to record data about login events.',
     'fields' => array(
       'login_id' => array(
         'description' => 'The primary identifier for a login.',

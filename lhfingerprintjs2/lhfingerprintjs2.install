@@ -10,6 +10,7 @@
  */
 function lhfingerprintjs2_schema() {
   $schema['lhfingerprintjs2'] = array(
+    'description' => 'Stores additional js based data about logins.',
     'fields' => array(
       'login_id' => array(
         'description' => 'The current {login_history}.login_id identifier.',
