@@ -224,7 +224,7 @@ function login_history_mail($key, &$message, $params){
     $language = $message['language'];
     $langcode = isset($language->language) ? $language->language : NULL;
     $subject = t('New device login for [user:name] at [site:name]', array(), array('langcode' => $langcode));
-    $body = t("[user:name], a new device or browser logged in to your CARD.com account:
+    $body = t("[user:name], a new device or browser logged in to your [site:name] account:
 When: [current-date:short]
 IP Address: @hostname
 Device & Browser: @user_agent
