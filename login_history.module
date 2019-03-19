@@ -17,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
 function login_history_user_login($account) {
   $request = \Drupal::request();
   // Is this a one-time login?
-  if (\Drupal::routeMatch()->getRouteName() === 'user.reset') {
+  if (\Drupal::routeMatch()->getRouteName() === 'user.reset.login') {
     $one_time = 1;
   }
   else {
