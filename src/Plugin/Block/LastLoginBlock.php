@@ -34,12 +34,12 @@ class LastLoginBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $build = array();
+    $build = [];
     if ($last_login = login_history_last_login()) {
       $request = \Drupal::request();
       $hostname = $last_login->hostname == $request->getClientIP() ? t('this IP address') : $last_login->hostname;
       $user_agent = $last_login->user_agent == $request->server->get('HTTP_USER_AGENT') ? t('this browser') : $last_login->user_agent;
-      $build['last_login']['#markup'] = '<p>' . t('You last logged in from @hostname using @user_agent.', array('@hostname' => $hostname, '@user_agent' => $user_agent)) . '</p>';
+      $build['last_login']['#markup'] = '<p>' . t('You last logged in from @hostname using @user_agent.', ['@hostname' => $hostname, '@user_agent' => $user_agent]) . '</p>';
       $user = \Drupal::currentUser();
       if ($user->hasPermission('view own login history')) {
         $build['view_report'] = [

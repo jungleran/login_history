@@ -9,46 +9,46 @@
  * Implements hook_schema().
  */
 function login_history_schema() {
-  $schema['login_history'] = array(
-    'fields' => array(
-      'uid' => array(
+  $schema['login_history'] = [
+    'fields' => [
+      'uid' => [
         'type' => 'int',
         'not null' => TRUE,
         'description' => 'uid of user.',
-      ),
-      'login' => array(
+      ],
+      'login' => [
         'type' => 'int',
         'not null' => TRUE,
         'description' => "Timestamp for user's login.",
-      ),
-      'hostname' => array(
+      ],
+      'hostname' => [
         'type' => 'varchar',
         'length' => 128,
         'not null' => TRUE,
         'default' => '',
         'description' => "The user's host name.",
-      ),
-      'one_time' => array(
+      ],
+      'one_time' => [
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
         'default' => 0,
         'size' => 'tiny',
         'description' => 'Indicates whether the login was from a one-time login link (e.g. password reset).',
-      ),
-      'user_agent' => array(
+      ],
+      'user_agent' => [
         'type' => 'varchar',
         'length' => 256,
         'not null' => TRUE,
         'default' => '',
         'description' => 'User agent (i.e. browser) of the device used during the login.',
-      ),
-    ),
-    'indexes' => array(
-      'login_history_uid' => array('uid'),
-      'login_history_onetime' => array('one_time'),
-      'login_history_uid_host_ua' => array('uid', 'hostname'),
-    ),
-  );
+      ],
+    ],
+    'indexes' => [
+      'login_history_uid' =>['uid'],
+      'login_history_onetime' => ['one_time'],
+      'login_history_uid_host_ua' => ['uid', 'hostname'],
+    ],
+  ];
   return $schema;
 }

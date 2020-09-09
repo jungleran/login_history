@@ -7,14 +7,13 @@
 
 namespace Drupal\login_history\Controller;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Controller routines for Login history routes.
@@ -22,13 +21,23 @@ use Symfony\Component\HttpFoundation\Request;
 class LoginHistoryController extends ControllerBase {
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * Constructs a \Drupal\login_history\Controller\LoginHistoryController object.
    *
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *    The date formatter service.
+   *  @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
    */
-  public function __construct(DateFormatterInterface $date_formatter) {
+  public function __construct(DateFormatterInterface $date_formatter, Connection $database) {
     $this->dateFormatter = $date_formatter;
+    $this->database = $database;
   }
 
   /**
@@ -36,7 +45,8 @@ class LoginHistoryController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
+      $container->get('database')
     );
   }
 
@@ -50,15 +60,15 @@ class LoginHistoryController extends ControllerBase {
    *   A render array.
    */
   public function report(UserInterface $user = NULL) {
-    $header = array(
-      array('data' => t('Date'), 'field' => 'lh.login', 'sort' => 'desc'),
-      array('data' => t('Username'), 'field' => 'ufd.name'),
-      array('data' => t('IP Address'), 'field' => 'lh.hostname'),
-      array('data' => t('One-time login?'), 'field' => 'lh.one_time'),
-      array('data' => t('User Agent')),
-    );
+    $header = [
+      ['data' => t('Date'), 'field' => 'lh.login', 'sort' => 'desc'],
+      ['data' => t('Username'), 'field' => 'ufd.name'],
+      ['data' => t('IP Address'), 'field' => 'lh.hostname'],
+      ['data' => t('One-time login?'), 'field' => 'lh.one_time'],
+      ['data' => t('User Agent')],
+    ];
 
-    $query = db_select('login_history', 'lh')
+    $query = $this->database->select('login_history', 'lh')
       ->extend('Drupal\Core\Database\Query\TableSortExtender')
       ->extend('Drupal\Core\Database\Query\PagerSelectExtender');
 
@@ -71,8 +81,8 @@ class LoginHistoryController extends ControllerBase {
 
     $result = $query
       ->fields('lh')
-      ->fields('u', array('uid'))
-      ->fields('ufd', array('name'))
+      ->fields('u', ['uid'])
+      ->fields('ufd', ['name'])
       ->orderByHeader($header)
       ->limit(50)
       ->execute()
@@ -94,31 +104,31 @@ class LoginHistoryController extends ControllerBase {
    */
   function generateReportTable(array $history, array $header) {
     // Load all users first.
-    $uids = array();
+    $uids = [];
     foreach ($history as $entry) {
       $uids[] = $entry->uid;
     }
     $users = User::loadMultiple($uids);
 
-    $rows = array();
+    $rows = [];
     foreach ($history as $entry) {
-      $rows[] = array(
+      $rows[] = [
         $this->dateFormatter->format($entry->login, 'small'),
-        $users[$entry->uid]->getUsername(),
+        $users[$entry->uid]->getAccountName(),
         $entry->hostname,
         empty($entry->one_time) ? t('Regular login') : t('One-time login'),
         $entry->user_agent,
-      );
+      ];
     }
-    $output['history'] = array(
+    $output['history'] = [
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
       '#empty' => t('No login history available.'),
-    );
-    $output['pager'] = array(
+    ];
+    $output['pager'] = [
       '#type' => 'pager',
-    );
+    ];
 
     return $output;
   }

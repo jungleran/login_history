@@ -32,14 +32,14 @@ function login_history_user_login($account) {
   }
 
   // Now save the user's current login timestamp to login_history.
-  db_insert('login_history')
-    ->fields(array(
+  \Drupal::database()->insert('login_history')
+    ->fields([
       'uid' => $account->id(),
       'login' => $account->getLastLoginTime(),
       'hostname' => $request->getClientIP(),
       'one_time' => $one_time,
       'user_agent' => $user_agent,
-    ))
+    ])
     ->execute();
 }
 
@@ -60,10 +60,10 @@ function login_history_last_login(AccountInterface $account = NULL) {
   if ($account->isAnonymous()) {
     return;
   }
-  $last_login = db_query("SELECT login, hostname, one_time, user_agent
+  $last_login = \Drupal::database()->query("SELECT login, hostname, one_time, user_agent
                    FROM {login_history}
                    WHERE uid = :uid
                    ORDER BY login DESC
-                   LIMIT 1, 2", array(':uid' => $account->id()))->fetchAll();
+                   LIMIT 1, 2", [':uid' => $account->id()])->fetchAll();
   return reset($last_login);
 }
